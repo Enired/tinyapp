@@ -9,7 +9,7 @@ const urlDataBase = {
 
 
 // SET View Engine
-app.set('view engine', 'ejs')
+app.set('view engine', 'ejs');
 
 // GET /
 app.get('/', (req, res) => {
@@ -18,13 +18,19 @@ app.get('/', (req, res) => {
 
 // GET /urls.json
 app.get('/urls.json', (req, res) => {
-  res.json(urlDataBase)
-})
+  res.json(urlDataBase);
+});
+
+// GET /urls
+app.get('/urls', (req, res) => {
+  const dataBase = {urls: urlDataBase};
+  res.render('urls-index', dataBase);
+});
 
 // GET /hello
 app.get('/hello', (req, res) => {
-  res.send('<html><body>Hello <b>World</b></body></html>\n')
-})
+  res.send('<html><body>Hello <b>World</b></body></html>\n');
+});
 
 app.listen(PORT, () => {
   console.log(`The server is now running. Server is listening on Port${PORT}`);

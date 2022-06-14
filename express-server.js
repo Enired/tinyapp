@@ -55,8 +55,10 @@ app.get('/hello', (req, res) => {
 
 // POST /urls
 app.post('/urls', (req, res) => {
-  console.log(req.body);
-  res.send('Ok!')
+  const shortURL = generateRandomString()
+  urlDataBase[shortURL] = req.body.longURL;
+  console.log(urlDataBase) //Server-side log of accumulated database. 
+  res.redirect(`/urls/${shortURL}`)
 })
 
 app.listen(PORT, () => {

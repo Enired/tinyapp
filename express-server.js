@@ -6,6 +6,11 @@ const urlDataBase = {
   'b2xVn2': 'http://www.lighthouselabs.ca',
   '9sm5xK': 'http://www.google.ca'
 };
+
+
+// SET View Engine
+app.set('view engine', 'ejs')
+
 // GET /
 app.get('/', (req, res) => {
   res.send('Hello friend!');

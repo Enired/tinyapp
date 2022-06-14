@@ -24,9 +24,9 @@ app.use(bodyParser.urlencoded({extended:true}))
 app.set('view engine', 'ejs');
 
 
-////////////
-// ROUTES //
-////////////
+////////////////
+// GET ROUTES //
+////////////////
 
 // GET /
 app.get('/', (req, res) => {
@@ -65,7 +65,9 @@ app.get('/hello', (req, res) => {
   res.send('<html><body>Hello <b>World</b></body></html>\n');
 });
 
-
+/////////////////
+// POST ROUTES //
+/////////////////
 
 // POST /urls
 app.post('/urls', (req, res) => {
@@ -80,6 +82,13 @@ app.post('/urls/delete/:shortURL', (req,res) => {
   console.log(urlDataBase)
   res.redirect('/urls')
 
+})
+app.post('/urls/edit/:shortURL', (req,res) => {
+    urlDataBase[req.params.shortURL] = req.body.newURL
+    console.log(urlDataBase) //Server-side log of accumulated database. 
+    res.redirect(`/urls/${req.params.shortURL}`)
+
+  
 })
 
 app.listen(PORT, () => {

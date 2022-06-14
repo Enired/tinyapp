@@ -23,9 +23,16 @@ app.get('/urls.json', (req, res) => {
 
 // GET /urls
 app.get('/urls', (req, res) => {
-  const dataBase = {urls: urlDataBase};
-  res.render('urls-index', dataBase);
+  const templateVars = {urls: urlDataBase};
+  res.render('urls-index', templateVars);
 });
+
+// GET /urls/:shortURL
+app.get('/urls/:shortURL', (req, res)=>{
+  const templateVars = {shortURL: req.params.shortURL, longURL:urlDataBase[req.params.shortURL]}
+  res.render('urls-show', templateVars)
+
+})
 
 // GET /hello
 app.get('/hello', (req, res) => {

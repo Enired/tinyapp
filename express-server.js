@@ -1,3 +1,4 @@
+const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
 const PORT = 1337; //Default Port is leet.
@@ -7,10 +8,18 @@ const urlDataBase = {
   '9sm5xK': 'http://www.google.ca'
 };
 
+const generateRandomString = () => {
+  return Math.random().toString(36).slice(2,8) //Simplified generator found on https://stackoverflow.com/questions/10726909/random-alpha-numeric-string-in-javascript. 
+}
+
 
 // SET View Engine
 app.set('view engine', 'ejs');
 
+// Middleware
+app.use(bodyParser.urlencoded({extended:true}))
+
+//ROUTES
 // GET /
 app.get('/', (req, res) => {
   res.send('Hello friend!');
@@ -39,12 +48,18 @@ app.get('/urls/:shortURL', (req, res)=>{
 
 })
 
-
 // GET /hello
 app.get('/hello', (req, res) => {
   res.send('<html><body>Hello <b>World</b></body></html>\n');
 });
 
+// POST /urls
+app.post('/urls', (req, res) => {
+  console.log(req.body);
+  res.send('Ok!')
+})
+
 app.listen(PORT, () => {
   console.log(`The server is now running. Server is listening on Port${PORT}`);
 });
+

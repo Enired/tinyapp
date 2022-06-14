@@ -13,16 +13,25 @@ const generateRandomString = () => {
 }
 
 
+
+
+////////////////
+// Middleware //
+////////////////
+app.use(bodyParser.urlencoded({extended:true}))
+
 // SET View Engine
 app.set('view engine', 'ejs');
 
-// Middleware
-app.use(bodyParser.urlencoded({extended:true}))
 
-//ROUTES
+////////////
+// ROUTES //
+////////////
+
 // GET /
 app.get('/', (req, res) => {
-  res.send('Hello friend!');
+  // res.send('Hello friend!');
+  res.redirect('/urls')
 });
 
 // GET /urls.json
@@ -56,12 +65,21 @@ app.get('/hello', (req, res) => {
   res.send('<html><body>Hello <b>World</b></body></html>\n');
 });
 
+
+
 // POST /urls
 app.post('/urls', (req, res) => {
   const shortURL = generateRandomString()
   urlDataBase[shortURL] = req.body.longURL;
   console.log(urlDataBase) //Server-side log of accumulated database. 
   res.redirect(`/urls/${shortURL}`)
+})
+
+app.post('/urls/delete/:shortURL', (req,res) => {
+  delete urlDataBase[req.params.shortURL];
+  console.log(urlDataBase)
+  res.redirect('/urls')
+
 })
 
 app.listen(PORT, () => {

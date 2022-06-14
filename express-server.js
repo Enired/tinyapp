@@ -1,5 +1,6 @@
 const bodyParser = require('body-parser');
 const express = require('express');
+const cookieParser = require('cookie-parser')
 const app = express();
 const PORT = 1337; //Default Port is leet.
 
@@ -8,6 +9,9 @@ const urlDataBase = {
   '9sm5xK': 'http://www.google.ca'
 };
 
+//////////////////////
+// Helper Functions //
+/////////////////////
 const generateRandomString = () => {
   return Math.random().toString(36).slice(2,8) //Simplified generator found on https://stackoverflow.com/questions/10726909/random-alpha-numeric-string-in-javascript. 
 }
@@ -19,6 +23,7 @@ const generateRandomString = () => {
 // Middleware //
 ////////////////
 app.use(bodyParser.urlencoded({extended:true}))
+app.use(cookieParser())
 
 // SET View Engine
 app.set('view engine', 'ejs');
@@ -31,6 +36,8 @@ app.set('view engine', 'ejs');
 // GET /
 app.get('/', (req, res) => {
   // res.send('Hello friend!');
+  res.cookie('id', generateRandomString())
+  console.log('cookies', req.cookies)
   res.redirect('/urls')
 });
 

@@ -47,7 +47,10 @@ app.get('/urls/:shortURL', (req, res)=>{
   res.render('urls-show', templateVars)
 
 })
-
+//GET /u/:shortURL
+app.get('/u/:shortURL', (req, res) => {
+  res.redirect(`${urlDataBase[req.params.shortURL]}`)
+})
 // GET /hello
 app.get('/hello', (req, res) => {
   res.send('<html><body>Hello <b>World</b></body></html>\n');

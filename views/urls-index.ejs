@@ -10,7 +10,7 @@
   <%- include('partials/_header') %>
   <main style="margin: 1em;">
     <h3>My URLS</h3>
-    <table>
+    <table class="table table-striped">
       <thead>
         <tr>
           <th scope="col">Short URL</th>
@@ -30,7 +30,7 @@
               </form>
             </td>
             <td>
-              <form action="/urls/edit/<%=url%>">
+              <form action="/urls/<%=url%>">
                 <button type="submit" class="btn btn-warning btn-sm">Edit URL</button>
               </form>
             </td>

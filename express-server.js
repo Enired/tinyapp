@@ -55,7 +55,7 @@ app.get('/urls', (req, res) => {
 // GET /urls/new
 app.get('/urls/new', (req, res) => {
   const templateVars = {username: req.cookies['username']}
-  res.render('urls-new');
+  res.render('urls-new',templateVars);
 })
 
 // GET /urls/:shortURL
@@ -108,9 +108,12 @@ app.post('/urls/edit/:shortURL', (req,res) => {
 app.post('/login', (req,res) =>{
   const userName = req.body.userName;
   res.cookie('username', userName)
-  // console.log('cookies', req.cookies)
-  console.log(req.body)
-  console.log(req.cookies)
+  res.redirect('/urls')
+})
+
+// POST /logout
+app.post('/logout', (req, res) => {
+  res.clearCookie('username')
   res.redirect('/urls')
 })
 

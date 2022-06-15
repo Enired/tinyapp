@@ -35,6 +35,16 @@ const generateRandomString = () => {
   return Math.random().toString(36).slice(2,8) //Simplified generator found on https://stackoverflow.com/questions/10726909/random-alpha-numeric-string-in-javascript. 
 }
 
+//Check if email is already registered in the database.
+const checkIfRegistered = (email) => {
+  for(user in userDataBase){
+    if(userDataBase[user].email === email){
+      return true;
+    }
+  }
+  return false;
+}
+
 ////////////////
 // Middleware //
 ////////////////
@@ -44,7 +54,7 @@ app.use(cookieParser())
 // SET View Engine
 app.set('view engine', 'ejs');
 
-
+checkIfRegistered('hello')
 ////////////////
 // GET ROUTES //
 ////////////////
@@ -103,6 +113,13 @@ app.get('/register', (req,res)=> {
   res.render('register', templateVars)
 })
 
+// GET /400
+app.get('/400', (req,res)=>{
+  const templateVars = {user: userDataBase[req.cookies.userID]}
+  res.statusCode = 400
+  res.render('400', templateVars)
+})
+
 /////////////////
 // POST ROUTES //
 /////////////////
@@ -145,15 +162,27 @@ app.post('/logout', (req, res) => {
 
 // POST /register
 app.post('/register',(req, res) => {
-  const userID = generateRandomString();
-  res.cookie('userID', userID)
+  if(!req.body.email || !req.body.password){
+    res.redirect('/400')
+  }
+  if(checkIfRegistered(req.body.email)){
+    console.log(userDataBase)
+    res.redirect('/400')
+  }
+  else{
+    const email = req.body.email;
+    const password = req.body.password;
+    const userID = generateRandomString();
+    res.cookie('userID', userID)
+  
+    
+    userDataBase[userID] = {id: userID, email,password}
+    console.log('New User Registered');
+    console.log('User DataBase Entries', userDataBase)
+    res.redirect('/urls');
 
-  const email = req.body.email;
-  const password = req.body.password;
-  userDataBase[userID] = {id: userID, email,password}
-  console.log('New User Registered');
-  console.log('User DataBase Entries', userDataBase)
-  res.redirect('/urls');
+  }
+
 })
 
 ////////////

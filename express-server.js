@@ -45,18 +45,26 @@ app.get('/urls.json', (req, res) => {
 
 // GET /urls
 app.get('/urls', (req, res) => {
-  const templateVars = {urls: urlDataBase};
+  const templateVars = {
+    urls: urlDataBase,
+    username: req.cookies['username']
+  };
   res.render('urls-index', templateVars);
 });
 
 // GET /urls/new
 app.get('/urls/new', (req, res) => {
+  const templateVars = {username: req.cookies['username']}
   res.render('urls-new');
 })
 
 // GET /urls/:shortURL
 app.get('/urls/:shortURL', (req, res)=>{
-  const templateVars = {shortURL: req.params.shortURL, longURL:urlDataBase[req.params.shortURL]}
+  const templateVars = {
+    shortURL: req.params.shortURL,
+    longURL:urlDataBase[req.params.shortURL],
+    username: req.cookies['username']
+  }
   res.render('urls-show', templateVars)
 
 })

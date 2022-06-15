@@ -12,11 +12,20 @@
       </div>
     </div>
     <%if(username){ %>
-      <div class="align-right">
-        <h5><em>Logged in as:</em> <%=username%> </h5>
+      <div class="row-align-center">
+        <div class="col-auto">
+        <h5><em>Logged in as:</em> <%=username%></h5>
+        </div>
       </div>
+     
+      <div class="col-auto">
+        <form action="/logout" method="post">
+        <button class="btn btn-secondary">Logout</button>
+      </form>
+    </div>
+      
     <%} else{%>
-    <div class="align-right">
+    <div class="col-auto">
       <form class="form-inline" action="/login" method="post" >
           <input class="form-contol" type="text" placeholder="Username" name="userName">
           <button class="btn btn-secondary">Login</button>

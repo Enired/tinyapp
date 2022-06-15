@@ -4,20 +4,36 @@ const cookieParser = require('cookie-parser')
 const app = express();
 const PORT = 1337; //Default Port is leet.
 
+
+
+
+
+//////////
+// Data //
+//////////
+
+// Url Database
 const urlDataBase = {
   'b2xVn2': 'http://www.lighthouselabs.ca',
   '9sm5xK': 'http://www.google.ca'
 };
 
-//////////////////////
-// Helper Functions //
-/////////////////////
-const generateRandomString = () => {
-  return Math.random().toString(36).slice(2,8) //Simplified generator found on https://stackoverflow.com/questions/10726909/random-alpha-numeric-string-in-javascript. 
+// User Database
+const userDataBase = {
+  'a': {email: 'a@a.com', password: 'qwerty'}
 }
 
 
 
+
+//////////////////////
+// Helper Functions //
+/////////////////////
+
+// Generate string for shortened links
+const generateRandomString = () => {
+  return Math.random().toString(36).slice(2,8) //Simplified generator found on https://stackoverflow.com/questions/10726909/random-alpha-numeric-string-in-javascript. 
+}
 
 ////////////////
 // Middleware //
@@ -68,10 +84,12 @@ app.get('/urls/:shortURL', (req, res)=>{
   res.render('urls-show', templateVars)
 
 })
+
 //GET /u/:shortURL
 app.get('/u/:shortURL', (req, res) => {
   res.redirect(`${urlDataBase[req.params.shortURL]}`)
 })
+
 // GET /hello
 app.get('/hello', (req, res) => {
   res.send('<html><body>Hello <b>World</b></body></html>\n');
@@ -123,6 +141,14 @@ app.post('/logout', (req, res) => {
   res.redirect('/urls')
 })
 
+// POST /register
+app.post('/register',(req, res) => {
+  console.log(req.body)
+})
+
+////////////
+// Server //
+////////////
 app.listen(PORT, () => {
   console.log(`The server is now running. Server is listening on Port${PORT}`);
 });

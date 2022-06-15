@@ -20,7 +20,7 @@ const urlDataBase = {
 
 // User Database
 const userDataBase = {
-  'a': {email: 'a@a.com', password: 'qwerty'}
+  'db0913': {id:'db0913', email: 'a@a.com', password: 'qwerty'}
 }
 
 
@@ -143,7 +143,15 @@ app.post('/logout', (req, res) => {
 
 // POST /register
 app.post('/register',(req, res) => {
-  console.log(req.body)
+  const userID = generateRandomString();
+  res.cookie('userID', userID)
+
+  const email = req.body.email;
+  const password = req.body.password;
+  userDataBase[userID] = {id: userID, email,password}
+  console.log('New User Registered');
+  console.log('User DataBase Entries', userDataBase)
+  res.redirect('/urls');
 })
 
 ////////////

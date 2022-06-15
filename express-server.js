@@ -35,9 +35,6 @@ app.set('view engine', 'ejs');
 
 // GET /
 app.get('/', (req, res) => {
-  // res.send('Hello friend!');
-  res.cookie('id', generateRandomString())
-  console.log('cookies', req.cookies)
   res.redirect('/urls')
 });
 
@@ -84,18 +81,29 @@ app.post('/urls', (req, res) => {
   res.redirect(`/urls/${shortURL}`)
 })
 
+// POST /urls/delete/:shortURL
 app.post('/urls/delete/:shortURL', (req,res) => {
   delete urlDataBase[req.params.shortURL];
   console.log(urlDataBase)
   res.redirect('/urls')
 
 })
+
+// POST /urls/edit/:shortURL
 app.post('/urls/edit/:shortURL', (req,res) => {
     urlDataBase[req.params.shortURL] = req.body.newURL
     console.log(urlDataBase) //Server-side log of accumulated database. 
     res.redirect(`/urls/${req.params.shortURL}`)
+})
 
-  
+// POST /login
+app.post('/login', (req,res) =>{
+  const userName = req.body.userName;
+  res.cookie('username', userName)
+  // console.log('cookies', req.cookies)
+  console.log(req.body)
+  console.log(req.cookies)
+  res.redirect('/urls')
 })
 
 app.listen(PORT, () => {

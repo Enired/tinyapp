@@ -18,8 +18,8 @@
       <div class="card-body">
         <h5 class="card-title">Edit URL</h5>
         <form class="form-inline justify-content-center" action="/urls/edit/<%=shortURL %>" method="post" >
-          <input class="form-control" type="text" name="newURL" placeholder="http://example.com" style="width: 300px; margin: 1em;" >
-          <button type="submit" class="btn btn-primary">Confirm</button>
+          <input class="form-control" type="text" name="newURL" placeholder="<%= longURL %>" style="width: 300px; margin: 1em;" >
+          <button type="submit" class="btn btn-primary">Update</button>
         </form>
       </div>
       <div class="card-footer text-muted"></div>

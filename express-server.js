@@ -4,7 +4,7 @@ const app = express();
 
 const bcrypt = require('bcryptjs');
 const cookieSession = require('cookie-session');
-const getUserFromDataBase = require('./helpers')
+const {getUserFromDataBase} = require('./helpers')
 
 const PORT = 1337; //Default Port is leet.
 
@@ -40,14 +40,14 @@ const generateRandomString = () => {
 
 
 const urlsForUser = (id) =>{
-  const filteredDataBase = {}
-  for(const url in urlDataBase){
-    if(urlDataBase[url].userID === id){
+  const filteredDataBase = {};
+  for (const url in urlDataBase) {
+    if (urlDataBase[url].userID === id) {
       filteredDataBase[url] = urlDataBase[url];
     }
   }
   return filteredDataBase;
-}
+};
 
 ////////////////
 // Middleware //
@@ -56,7 +56,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(cookieSession({
   name: 'session',
   keys: ['octane', 'mirage', 'bloodhound', 'pathfinder', 'crypto']
-}))
+}));
 
 // SET View Engine
 app.set('view engine', 'ejs');
@@ -206,7 +206,7 @@ app.post('/urls/edit/:shortURL', (req,res) => {
 app.post('/login', (req,res) =>{
   if (getUserFromDataBase(req.body.email, userDataBase)) {
     if (bcrypt.compareSync(req.body.password, getUserFromDataBase(req.body.email, userDataBase).password)) {
-      req.session.userId =  getUserFromDataBase(req.body.email,userDataBase).id
+      req.session.userId =  getUserFromDataBase(req.body.email,userDataBase).id;
       res.redirect('/urls');
     } else {
       res.redirect('/403');
@@ -220,7 +220,7 @@ app.post('/login', (req,res) =>{
 
 // POST /logout
 app.post('/logout', (req, res) => {
-  req.session = null
+  req.session = null;
   res.redirect('/urls');
 });
 
@@ -237,7 +237,7 @@ app.post('/register',(req, res) => {
     const salt = bcrypt.genSaltSync(10);
     const password = bcrypt.hashSync(req.body.password, salt);
     const userID = generateRandomString();
-    req.session.userId =  userID
+    req.session.userId =  userID;
   
     
     userDataBase[userID] = {id: userID, email,password};

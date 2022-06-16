@@ -23,10 +23,9 @@
    
         <% for(let url in urls) { %>
           <tr>
+            <%if(user.id===urls[url].userID){%>
             <td><%=url%></td>
             <td><%=urls[url].longURL%></td>
-    
-            <%if(user.id===urls[url].userID){%>
               <td>
                 <form action="/urls/delete/<%=url%>" method="post">
                   <button type="submit" class="btn btn-danger btn-sm">Delete</button>
@@ -36,14 +35,6 @@
                 <form action="/urls/<%=url%>">
                   <button type="submit" class="btn btn-warning btn-sm">Edit URL</button>
                 </form>
-              </td>
-            </tr>
-            <%}else{%>
-              <td>
-                
-              </td>
-              <td>
-                
               </td>
             </tr>
             <%}%>

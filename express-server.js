@@ -1,9 +1,10 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
-// const cookieParser = require('cookie-parser'); //REMOVE ONCE COOKIE-SESSION IS SETUP
+
 const bcrypt = require('bcryptjs');
 const cookieSession = require('cookie-session');
+const getUserFromDataBase = require('./helpers')
 
 const PORT = 1337; //Default Port is leet.
 
@@ -37,14 +38,6 @@ const generateRandomString = () => {
   return Math.random().toString(36).slice(2,8); //Simplified generator found on https://stackoverflow.com/questions/10726909/random-alpha-numeric-string-in-javascript.
 };
 
-// Check if user is in the database based on email input.
-const getUserFromDataBase = (email) => {
-  for (const user in userDataBase) {
-    if (userDataBase[user].email === email) {
-      return userDataBase[user];
-    }
-  }
-};
 
 const urlsForUser = (id) =>{
   const filteredDataBase = {}
@@ -211,9 +204,9 @@ app.post('/urls/edit/:shortURL', (req,res) => {
 
 // POST /login
 app.post('/login', (req,res) =>{
-  if (getUserFromDataBase(req.body.email)) {
-    if (bcrypt.compareSync(req.body.password, getUserFromDataBase(req.body.email).password)) {
-      req.session.userId =  getUserFromDataBase(req.body.email).id
+  if (getUserFromDataBase(req.body.email, userDataBase)) {
+    if (bcrypt.compareSync(req.body.password, getUserFromDataBase(req.body.email, userDataBase).password)) {
+      req.session.userId =  getUserFromDataBase(req.body.email,userDataBase).id
       res.redirect('/urls');
     } else {
       res.redirect('/403');
@@ -236,7 +229,7 @@ app.post('/register',(req, res) => {
   if (!req.body.email || !req.body.password) {
     res.redirect('/400');
   }
-  if (getUserFromDataBase(req.body.email)) {
+  if (getUserFromDataBase(req.body.email, urlDataBase)) {
     console.log(userDataBase);
     res.redirect('/400');
   } else {
@@ -262,4 +255,3 @@ app.post('/register',(req, res) => {
 app.listen(PORT, () => {
   console.log(`The server is now running. Server is listening on Port${PORT}`);
 });
-

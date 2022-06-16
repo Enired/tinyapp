@@ -213,7 +213,6 @@ app.post('/urls/edit/:shortURL', (req,res) => {
 app.post('/login', (req,res) =>{
   if (getUserFromDataBase(req.body.email)) {
     if (bcrypt.compareSync(req.body.password, getUserFromDataBase(req.body.email).password)) {
-      // res.cookie('userID', getUserFromDataBase(req.body.email).id);
       req.session.userId =  getUserFromDataBase(req.body.email).id
       res.redirect('/urls');
     } else {
@@ -228,7 +227,6 @@ app.post('/login', (req,res) =>{
 
 // POST /logout
 app.post('/logout', (req, res) => {
-  // res.clearCookie('userID');
   req.session = null
   res.redirect('/urls');
 });
@@ -246,7 +244,7 @@ app.post('/register',(req, res) => {
     const salt = bcrypt.genSaltSync(10);
     const password = bcrypt.hashSync(req.body.password, salt);
     const userID = generateRandomString();
-    req.session.userId =  getUserFromDataBase(req.body.email).id
+    req.session.userId =  userID
   
     
     userDataBase[userID] = {id: userID, email,password};

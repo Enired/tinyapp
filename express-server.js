@@ -14,8 +14,12 @@ const PORT = 1337; //Default Port is leet.
 
 // Url Database
 const urlDataBase = {
-  'b2xVn2': 'http://www.lighthouselabs.ca',
-  '9sm5xK': 'http://www.google.ca'
+  'b2xVn2': {
+    longURL:'http://www.lighthouselabs.ca', 
+    userID:'db0913'},
+  '9sm5xK': {
+    longURL:'http://www.google.ca', 
+    userID:'bl0819'}
 };
 
 // User Database
@@ -81,8 +85,13 @@ app.get('/urls', (req, res) => {
 // GET /urls/new
 app.get('/urls/new', (req, res) => {
   const templateVars = {userDataBase,
-    user: userDataBase[req.cookies.userID]}
-  res.render('urls-new',templateVars);
+  user: userDataBase[req.cookies.userID]}
+  if(Object.keys(req.cookies).length){
+    res.render('urls-new',templateVars);
+  }
+  else{
+    res.redirect('/login');
+  }
 })
 
 // GET /urls/:shortURL
@@ -90,7 +99,7 @@ app.get('/urls/:shortURL', (req, res)=>{
   
   const templateVars = {
     shortURL: req.params.shortURL,
-    longURL:urlDataBase[req.params.shortURL],
+    longURL:urlDataBase[req.params.shortURL].longURL,
     user: userDataBase[req.cookies.userID]
   }
   res.render('urls-show', templateVars)
@@ -99,7 +108,12 @@ app.get('/urls/:shortURL', (req, res)=>{
 
 //GET /u/:shortURL
 app.get('/u/:shortURL', (req, res) => {
-  res.redirect(`${urlDataBase[req.params.shortURL]}`)
+  if(urlDataBase[req.params.shortURL]){
+    res.redirect(`${urlDataBase[req.params.shortURL].longURL}`)
+  }
+  else{
+    res.redirect('/400')
+  }
 })
 
 // GET /hello
@@ -142,10 +156,12 @@ app.get('/403', (req, res)=>{
 
 // POST /urls
 app.post('/urls', (req, res) => {
-  const shortURL = generateRandomString()
-  urlDataBase[shortURL] = req.body.longURL;
-  console.log(urlDataBase) //Server-side log of accumulated database. 
-  res.redirect(`/urls/${shortURL}`)
+  if(Object.keys(req.cookies).length){
+    const shortURL = generateRandomString()
+    urlDataBase[shortURL] = {longURL:req.body.longURL, id:req.cookies.userID};
+    console.log(urlDataBase) //Server-side log of accumulated database. 
+    res.redirect(`/urls/${shortURL}`)
+  }
 })
 
 // POST /urls/delete/:shortURL

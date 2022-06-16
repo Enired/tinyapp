@@ -9,7 +9,6 @@
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create new URL</a>
-        <a class="nav-item nav-link" href="/register">Register</a>
         <%if(user){%>
           <div>
             <div class="nav-item nav-text">
@@ -24,6 +23,7 @@
             
           </div>
           <%}else{%>
+            <a class="nav-item nav-link" href="/register">Register</a>
             <div>
               <!-- <a class="nav-item nav-link" href="/login">Login</a> -->
               <form action="/login" method="get">

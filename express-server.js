@@ -75,11 +75,17 @@ app.get('/urls.json', (req, res) => {
 
 // GET /urls
 app.get('/urls', (req, res) => {
-  const templateVars = {
-    urls: urlDataBase,
-    user: userDataBase[req.cookies.userID]
-  };
-  res.render('urls-index', templateVars);
+  if(Object.keys(req.cookies).length){
+    const templateVars = {
+      urls: urlDataBase,
+      user: userDataBase[req.cookies.userID]
+    };
+    res.render('urls-index', templateVars);
+  }
+  else{
+    res.redirect('/error-log-in-register')
+  }
+
 });
 
 // GET /urls/new
@@ -136,6 +142,10 @@ app.get('/register', (req,res)=> {
   res.render('register', templateVars)
 })
 
+//////////////////////
+// ERROR GET ROUTES //
+//////////////////////
+
 // GET /400
 app.get('/400', (req,res)=>{
   const templateVars = {user: userDataBase[req.cookies.userID]}
@@ -150,6 +160,12 @@ app.get('/403', (req, res)=>{
   res.render('403', templateVars)
 })
 
+// GET /error-log-in-register
+app.get('/error-log-in-register', (req, res) => {
+  const templateVars = {user: userDataBase[req.cookies.userID]}
+  res.render('error-log-in-register', templateVars)
+})
+
 /////////////////
 // POST ROUTES //
 /////////////////
@@ -158,7 +174,7 @@ app.get('/403', (req, res)=>{
 app.post('/urls', (req, res) => {
   if(Object.keys(req.cookies).length){
     const shortURL = generateRandomString()
-    urlDataBase[shortURL] = {longURL:req.body.longURL, id:req.cookies.userID};
+    urlDataBase[shortURL] = {longURL:req.body.longURL, userID:req.cookies.userID};
     console.log(urlDataBase) //Server-side log of accumulated database. 
     res.redirect(`/urls/${shortURL}`)
   }

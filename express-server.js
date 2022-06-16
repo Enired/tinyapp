@@ -37,23 +37,7 @@ const generateRandomString = () => {
   return Math.random().toString(36).slice(2,8) //Simplified generator found on https://stackoverflow.com/questions/10726909/random-alpha-numeric-string-in-javascript. 
 }
 
-//Check if email is already registered in the database.
-const checkIfRegistered = (email) => {
-  for(user in userDataBase){
-    if(userDataBase[user].email === email){
-      return true;
-    }
-  }
-  return false;
-}
-
-// const getUserIDFromDataBase = (email) => {
-//   for(user in userDataBase){
-//     if(userDataBase[user].email === email){
-//       return userDataBase[user].id
-//     }
-//   }
-// }
+// Check if user is in the database based on email input.
 const getUserFromDataBase = (email) => {
   for(user in userDataBase){
     if(userDataBase[user].email === email){
@@ -145,6 +129,13 @@ app.get('/400', (req,res)=>{
   res.render('400', templateVars)
 })
 
+// GET /403
+app.get('/403', (req, res)=>{
+  const templateVars = {user: userDataBase[req.cookies.userID]}
+  res.statusCode = 403
+  res.render('403', templateVars)
+})
+
 /////////////////
 // POST ROUTES //
 /////////////////
@@ -174,16 +165,17 @@ app.post('/urls/edit/:shortURL', (req,res) => {
 
 // POST /login
 app.post('/login', (req,res) =>{
-  // const userName = req.body.userName;
-  // res.cookie('username', userName)
   console.log(req.body)
-  if(checkIfRegistered(req.body.email)){
-    res.cookie('userID', getUserFromDataBase(req.body.email).id)
-    res.redirect('/urls')
+  if(getUserFromDataBase(req.body.email)){
+    if(getUserFromDataBase(req.body.email).password === req.body.password){
+      res.cookie('userID', getUserFromDataBase(req.body.email).id)
+      res.redirect('/urls')
+    }
+    res.redirect('/403')
   }
-  else{
-    res.redirect('/400')
-  }
+  
+  res.redirect('/400')
+  
 })
 
 // POST /logout
@@ -197,7 +189,7 @@ app.post('/register',(req, res) => {
   if(!req.body.email || !req.body.password){
     res.redirect('/400')
   }
-  if(checkIfRegistered(req.body.email)){
+  if(getUserFromDataBase(req.body.email)){
     console.log(userDataBase)
     res.redirect('/400')
   }

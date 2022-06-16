@@ -223,7 +223,7 @@ app.post('/login', (req,res) =>{
 // POST /logout
 app.post('/logout', (req, res) => {
   res.clearCookie('userID')
-  res.redirect('/login')
+  res.redirect('/urls')
 })
 
 // POST /register

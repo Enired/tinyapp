@@ -20,7 +20,9 @@ const urlDataBase = {
 
 // User Database
 const userDataBase = {
-  'db0913': {id:'db0913', email: 'a@a.com', password: 'qwerty'}
+  'db0913': {id:'db0913', email: 'a@a.com', password: 'qwerty'},
+  'bl0819': {id:'bl0819', email: 'b@b.com', password: 'qwerty'}
+
 }
 
 
@@ -45,6 +47,21 @@ const checkIfRegistered = (email) => {
   return false;
 }
 
+// const getUserIDFromDataBase = (email) => {
+//   for(user in userDataBase){
+//     if(userDataBase[user].email === email){
+//       return userDataBase[user].id
+//     }
+//   }
+// }
+const getUserFromDataBase = (email) => {
+  for(user in userDataBase){
+    if(userDataBase[user].email === email){
+      return userDataBase[user]
+    }
+  }
+}
+
 ////////////////
 // Middleware //
 ////////////////
@@ -54,7 +71,6 @@ app.use(cookieParser())
 // SET View Engine
 app.set('view engine', 'ejs');
 
-checkIfRegistered('hello')
 ////////////////
 // GET ROUTES //
 ////////////////
@@ -91,7 +107,7 @@ app.get('/urls/:shortURL', (req, res)=>{
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL:urlDataBase[req.params.shortURL],
-    user: userDataBase[res.cookies.userID]
+    user: userDataBase[req.cookies.userID]
   }
   res.render('urls-show', templateVars)
 
@@ -106,6 +122,15 @@ app.get('/u/:shortURL', (req, res) => {
 app.get('/hello', (req, res) => {
   res.send('<html><body>Hello <b>World</b></body></html>\n');
 });
+
+// GET /login
+app.get('/login', (req, res) => {
+  const templateVars = {
+    user: userDataBase[req.cookies.userID]
+  }
+  res.render('login', templateVars)
+})
+
 
 // GET /register
 app.get('/register', (req,res)=> {
@@ -149,15 +174,22 @@ app.post('/urls/edit/:shortURL', (req,res) => {
 
 // POST /login
 app.post('/login', (req,res) =>{
-  const userName = req.body.userName;
-  res.cookie('username', userName)
-  res.redirect('/urls')
+  // const userName = req.body.userName;
+  // res.cookie('username', userName)
+  console.log(req.body)
+  if(checkIfRegistered(req.body.email)){
+    res.cookie('userID', getUserFromDataBase(req.body.email).id)
+    res.redirect('/urls')
+  }
+  else{
+    res.redirect('/400')
+  }
 })
 
 // POST /logout
 app.post('/logout', (req, res) => {
   res.clearCookie('userID')
-  res.redirect('/urls')
+  res.redirect('/login')
 })
 
 // POST /register
@@ -169,6 +201,7 @@ app.post('/register',(req, res) => {
     console.log(userDataBase)
     res.redirect('/400')
   }
+
   else{
     const email = req.body.email;
     const password = req.body.password;

@@ -10,28 +10,28 @@
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create new URL</a>
         <a class="nav-item nav-link" href="/register">Register</a>
+        <%if(user){%>
+          <div>
+            <div class="nav-item nav-text">
+              Logged in as: <%=user.email%>
+            </div>
+          </div>
+          <div>
+            <!-- <a class="nav-item nav-link" href="/logout">Logout</a> -->
+            <form action="/logout" method="post">
+              <button type="submit">Logout</button>
+            </form>
+            
+          </div>
+          <%}else{%>
+            <div>
+              <!-- <a class="nav-item nav-link" href="/login">Login</a> -->
+              <form action="/login" method="get">
+                <button type="submit">Login</button>
+              </form>
+            </div>
+            <%}%>
       </div>
     </div>
-    <%if(user){ %>
-      <div class="row-align-center">
-        <div class="col-auto">
-        <h5><em>Logged in as:</em> <%=user.email%></h5>
-        </div>
-      </div>
-     
-      <div class="col-auto">
-        <form action="/logout" method="post">
-        <button class="btn btn-secondary">Logout</button>
-      </form>
-    </div>
-      
-    <%} else{%>
-    <div class="col-auto">
-      <form class="form-inline" action="/login" method="post" >
-          <input class="form-contol" type="text" placeholder="Username" name="userName">
-          <button class="btn btn-secondary" style="margin-left: 1em;">Login</button>
-        </form>
-      </div>
-      <%}%>
   </nav>
 </header>

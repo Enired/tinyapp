@@ -195,7 +195,7 @@ app.post('/urls/delete/:shortURL', (req,res) => {
 
 // POST /urls/edit/:shortURL
 app.post('/urls/edit/:shortURL', (req,res) => {
-    urlDataBase[req.params.shortURL] = req.body.newURL
+    urlDataBase[req.params.shortURL] = {longURL:req.body.newURL, userID:req.cookies.userID}
     console.log(urlDataBase) //Server-side log of accumulated database. 
     res.redirect(`/urls/${req.params.shortURL}`)
 })

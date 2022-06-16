@@ -143,8 +143,13 @@ app.get('/login', (req, res) => {
 
 // GET /register
 app.get('/register', (req,res)=> {
-  const templateVars = {user: userDataBase[req.cookies.userID]}
-  res.render('register', templateVars)
+  if(Object.keys(req.cookies).length){
+    res.redirect('/urls');
+  }
+  else{
+    const templateVars = {user: userDataBase[req.cookies.userID]}
+    res.render('register', templateVars)
+  }
 })
 
 //////////////////////

@@ -65,7 +65,12 @@ app.set('view engine', 'ejs');
 
 // GET /
 app.get('/', (req, res) => {
-  res.redirect('/urls')
+  if(Object.keys(req.cookies).length){
+    res.redirect('/urls')
+  }
+  else{
+    res.redirect('/login')
+  }
 });
 
 // GET /urls.json

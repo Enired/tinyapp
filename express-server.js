@@ -1,12 +1,11 @@
 const bodyParser = require('body-parser');
 const express = require('express');
-const cookieParser = require('cookie-parser')
 const app = express();
+const cookieParser = require('cookie-parser')
+
+const bcrypt = require('bcryptjs')
+
 const PORT = 1337; //Default Port is leet.
-
-
-
-
 
 //////////
 // Data //
@@ -24,13 +23,10 @@ const urlDataBase = {
 
 // User Database
 const userDataBase = {
-  'db0913': {id:'db0913', email: 'a@a.com', password: 'qwerty'},
-  'bl0819': {id:'bl0819', email: 'b@b.com', password: 'qwerty'}
+  'db0913': {id:'db0913', email: 'a@a.com', password: '$2a$10$oqO8MbfYT1CnADwmn5qaqe3jiuQPBanGHG0NYsQXxQnZDGp3ubxqy'},
+  'bl0819': {id:'bl0819', email: 'b@b.com', password: '$2a$10$oqO8MbfYT1CnADwmn5qaqe3jiuQPBanGHG0NYsQXxQnZDGp3ubxqy'}
 
 }
-
-
-
 
 //////////////////////
 // Helper Functions //
@@ -209,7 +205,7 @@ app.post('/urls/edit/:shortURL', (req,res) => {
 app.post('/login', (req,res) =>{
   console.log(req.body)
   if(getUserFromDataBase(req.body.email)){
-    if(getUserFromDataBase(req.body.email).password === req.body.password){
+    if(bcrypt.compareSync(req.body.password, getUserFromDataBase(req.body.email).password)){
       res.cookie('userID', getUserFromDataBase(req.body.email).id)
       res.redirect('/urls')
     }
@@ -238,7 +234,8 @@ app.post('/register',(req, res) => {
 
   else{
     const email = req.body.email;
-    const password = req.body.password;
+    const salt = bcrypt.genSaltSync(10)
+    const password = bcrypt.hashSync(req.body.password, salt) ;
     const userID = generateRandomString();
     res.cookie('userID', userID)
   

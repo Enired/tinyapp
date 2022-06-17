@@ -14,13 +14,13 @@
         <%if(user){%>
           <div>
             <div class="nav-item nav-text" style="padding-right: 1em;">
-              Logged in as: <%=user.email%>
+              <b>Logged in as: <%=user.email%></b>
             </div>
           </div>
           <div>
             <!-- <a class="nav-item nav-link" href="/logout">Logout</a> -->
             <form action="/logout" method="post">
-              <button type="submit">Logout</button>
+              <button type="submit" class="btn btn-sm btn-light">Logout</button>
             </form>
             
           </div>

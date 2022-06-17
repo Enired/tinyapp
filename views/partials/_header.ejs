@@ -25,11 +25,14 @@
             
           </div>
           <%}else{%>
-            <a class="nav-item nav-link" href="/register">Register</a>
+            <form action="/register" method="get" style="padding-right: 1em;">
+              <button type="submit" class="btn btn-sm btn-light">Register</button>
+            </form>
+            <!-- <a class="nav-item nav-link" href="/register">Register</a> -->
             <div>
               <!-- <a class="nav-item nav-link" href="/login">Login</a> -->
               <form action="/login" method="get">
-                <button type="submit">Login</button>
+                <button type="submit" class="btn btn-sm btn-light">Login</button>
               </form>
             </div>
             <%}%>

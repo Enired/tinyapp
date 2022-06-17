@@ -83,7 +83,12 @@ app.get('/urls', (req, res) => {
     };
     return res.render('urls-index', templateVars);
   } else {
-    return res.redirect('/error-log-in-register');
+    const templateVars = {
+      user: null,
+      message: 'Error: Please register and/or login'
+    };
+    res.statusCode = 400;
+    return res.render('error', templateVars);
   }
 });
 
@@ -112,10 +117,20 @@ app.get('/urls/:shortURL', (req, res)=>{
       };
       return res.render('urls-show', templateVars);
     } else {
-      return res.send('Error you cannot edit this link because you do not own it.');
+      const templateVars = {
+        user: userDataBase[req.session.userId],
+        message: 'Error you cannot edit this link because you do not own it.'
+      };
+      res.statusCode = 400;
+      return res.render('error', templateVars);
     }
   } else {
-    return res.send('Error that URL ID does not exist.');
+    const templateVars = {
+      user: null,
+      message: 'Error: that URL ID does not exist.'
+    };
+    res.statusCode = 400;
+    return res.render('error', templateVars);
   }
 
 
@@ -123,11 +138,16 @@ app.get('/urls/:shortURL', (req, res)=>{
 
 //GET /u/:shortURL
 app.get('/u/:shortURL', (req, res) => {
-  const shortURLDetails = urlDataBase[req.params.shortURL];
-  if (shortURLDetails) {
-    return res.redirect(`${shortURLDetails.longURL}`);
+  const shortURLObj = urlDataBase[req.params.shortURL];
+  if (shortURLObj) {
+    return res.redirect(`${shortURLObj.longURL}`);
   } else {
-    return res.redirect('/400');
+    const templateVars = {
+      user: null,
+      message: 'Sorry that short link does not exist'
+    };
+    res.statusCode = 400;
+    return res.render('error', templateVars);
   }
 });
 
@@ -150,30 +170,6 @@ app.get('/register', (req,res)=> {
   }
 });
 
-//////////////////////
-// ERROR GET ROUTES //
-//////////////////////
-
-// GET /400
-app.get('/400', (_,res)=>{
-  const templateVars = {user: null};
-  res.statusCode = 400;
-  res.render('400', templateVars);
-});
-
-// GET /403
-app.get('/403', (_, res)=>{
-  const templateVars = {user: null};
-  res.statusCode = 403;
-  res.render('403', templateVars);
-});
-
-// GET /error-log-in-register
-app.get('/error-log-in-register', (_, res) => {
-  const templateVars = {user: null};
-  res.render('error-log-in-register', templateVars);
-});
-
 /////////////////
 // POST ROUTES //
 /////////////////
@@ -193,7 +189,6 @@ app.post('/urls', (req, res) => {
 app.post('/urls/delete/:shortURL', (req,res) => {
   const shortURL = req.params.shortURL;
   delete urlDataBase[shortURL];
-  console.log(urlDataBase);
   res.redirect('/urls');
 });
 
@@ -217,10 +212,27 @@ app.post('/login', (req, res) =>{
       req.session.userId = user.id;
       return res.redirect('/urls');
     } else {
-      return res.redirect('/403');
+      const templateVars = {
+        user: null,
+        message: 'Wrong Password.'
+      };
+      res.statusCode = 403;
+      return res.render('error', templateVars);
     }
-  } else {
-    return res.redirect('/400');
+  } else if (!passwordInput) {
+    const templateVars = {
+      user: null,
+      message: 'Please enter a password.'
+    };
+    res.statusCode = 400;
+    return res.render('error', templateVars);
+  }  else if (!user) {
+    const templateVars = {
+      user: null,
+      message: 'Please enter a registered email.'
+    };
+    res.statusCode = 400;
+    return res.render('error', templateVars);
   }
 });
 
@@ -235,13 +247,31 @@ app.post('/register',(req, res) => {
   const email = req.body.email;
   const passwordInput = req.body.password;
 
-  if (!email || !passwordInput) {
-    res.redirect('/400');
+  if (!email) {
+    const templateVars = {
+      user:null,
+      message: 'Please enter an email.'
+    };
+    res.statusCode = 400;
+    return res.render('error', templateVars);
+  } else if (!passwordInput) {
+    const templateVars = {
+      user: null,
+      message: 'Please enter a password.'
+    };
+    res.statusCode = 400;
+    return res.render('error', templateVars);
+
   }
-  const userFound = getUserFromDataBase(email, urlDataBase);
+  const userFound = getUserFromDataBase(email, userDataBase);
   // If user exists.
-  if (userFound.id) {
-    return res.redirect('/400');
+  if (userFound) {
+    const templateVars = {
+      user: null,
+      message: 'That email is already registered please use a different email.'
+    };
+    res.statusCode = 400;
+    return res.render('error', templateVars);
   }
   const salt = bcrypt.genSaltSync(10);
   const password = bcrypt.hashSync(passwordInput, salt);

@@ -26,7 +26,6 @@ const urlDataBase = {
 const userDataBase = {
   'db0913': {id:'db0913', email: 'a@a.com', password: '$2a$10$oqO8MbfYT1CnADwmn5qaqe3jiuQPBanGHG0NYsQXxQnZDGp3ubxqy'},
   'bl0819': {id:'bl0819', email: 'b@b.com', password: '$2a$10$oqO8MbfYT1CnADwmn5qaqe3jiuQPBanGHG0NYsQXxQnZDGp3ubxqy'}
-
 };
 
 //////////////////////
@@ -38,12 +37,13 @@ const generateRandomString = () => {
   return Math.random().toString(36).slice(2,8); //Simplified generator found on https://stackoverflow.com/questions/10726909/random-alpha-numeric-string-in-javascript.
 };
 
-
+// Filters database and creates another sub-database containing links made by a specific user.
 const urlsForUser = (id) =>{
   const filteredDataBase = {};
   for (const url in urlDataBase) {
-    if (urlDataBase[url].userID === id) {
-      filteredDataBase[url] = urlDataBase[url];
+    const linkDetails = urlDataBase[url];
+    if (linkDetails.userID === id) {
+      filteredDataBase[url] = linkDetails;
     }
   }
   return filteredDataBase;
@@ -68,10 +68,10 @@ app.set('view engine', 'ejs');
 // GET /
 app.get('/', (req, res) => {
   if (req.session.userId) {
-    res.redirect('/urls');
-  } else {
-    res.redirect('/login');
+    return res.redirect('/urls');
   }
+  return res.redirect('/login');
+  
 });
 
 // GET /urls.json
@@ -82,78 +82,72 @@ app.get('/urls.json', (req, res) => {
 // GET /urls
 app.get('/urls', (req, res) => {
   if (req.session.userId) {
+    const userOwnLinks = urlsForUser(req.session.userId);
+    const user = userDataBase[req.session.userId];
     const templateVars = {
-      urls: urlsForUser(req.session.userId),
-      user: userDataBase[req.session.userId]
+      urls: userOwnLinks,
+      user
     };
-    res.render('urls-index', templateVars);
-  } else {
-    res.redirect('/error-log-in-register');
+    return res.render('urls-index', templateVars);
   }
-
+  return res.redirect('/error-log-in-register');
 });
 
 // GET /urls/new
 app.get('/urls/new', (req, res) => {
-  const templateVars = {userDataBase,
-    user: userDataBase[req.session.userId]};
-  if (req.session.userId) {
-    res.render('urls-new',templateVars);
-  } else {
-    res.redirect('/login');
+  const cookie = req.session.userId;
+  const user = userDataBase[cookie];
+  const templateVars = {userDataBase, user};
+  if (cookie) {
+    return res.render('urls-new',templateVars);
   }
+  return res.redirect('/login');
 });
 
 // GET /urls/:shortURL
 app.get('/urls/:shortURL', (req, res)=>{
-  if (urlDataBase[req.params.shortURL]) {
-    if (req.session.userId === urlDataBase[req.params.shortURL].userID) {
+  const shortURL = req.params.shortURL;
+  const shortURLDetails = urlDataBase[shortURL];
+  if (shortURLDetails) {
+    if (req.session.userId === shortURLDetails.userID) {
       const templateVars = {
-        shortURL: req.params.shortURL,
-        longURL:urlDataBase[req.params.shortURL].longURL,
+        shortURL,
+        longURL:shortURLDetails.longURL,
         user: userDataBase[req.session.userId]
       };
-      res.render('urls-show', templateVars);
-    } else {
-      res.send('Error you cannot edit this link because you do not own it.');
+      return res.render('urls-show', templateVars);
     }
-  } else {
-    res.send('Error that URL ID does not exist.');
+    return res.send('Error you cannot edit this link because you do not own it.');
   }
+  return res.send('Error that URL ID does not exist.');
 
 });
 
 //GET /u/:shortURL
 app.get('/u/:shortURL', (req, res) => {
-  if (urlDataBase[req.params.shortURL]) {
-    res.redirect(`${urlDataBase[req.params.shortURL].longURL}`);
-  } else {
-    res.redirect('/400');
+  const shortURLDetails = urlDataBase[req.params.shortURL];
+  if (shortURLDetails) {
+    return res.redirect(`${shortURLDetails.longURL}`);
   }
-});
-
-// GET /hello
-app.get('/hello', (req, res) => {
-  res.send('<html><body>Hello <b>World</b></body></html>\n');
+  return res.redirect('/400');
 });
 
 // GET /login
 app.get('/login', (req, res) => {
-  const templateVars = {
-    user: userDataBase[req.session.userId]
-  };
+  const user = userDataBase[req.session.userId];
+  const templateVars = {user};
   res.render('login', templateVars);
 });
 
 
 // GET /register
 app.get('/register', (req,res)=> {
-  if (req.session.userId) {
-    res.redirect('/urls');
-  } else {
-    const templateVars = {user: userDataBase[req.session.userId]};
-    res.render('register', templateVars);
+  const cookie = req.session.userId;
+  if (cookie) {
+    return res.redirect('/urls');
   }
+  const templateVars = {user: userDataBase[cookie]};
+  return res.render('register', templateVars);
 });
 
 //////////////////////
@@ -196,33 +190,36 @@ app.post('/urls', (req, res) => {
 
 // POST /urls/delete/:shortURL
 app.post('/urls/delete/:shortURL', (req,res) => {
-  delete urlDataBase[req.params.shortURL];
+  const shortURL = req.params.shortURL;
+  delete urlDataBase[shortURL];
   console.log(urlDataBase);
   res.redirect('/urls');
-
 });
 
 // POST /urls/edit/:shortURL
 app.post('/urls/edit/:shortURL', (req,res) => {
-  urlDataBase[req.params.shortURL] = {longURL:req.body.newURL, userID:req.session.userId};
+  const newLongURL = req.body.newURL;
+  const cookie = req.session.userId;
+  const shortURL = req.params.shortURL;
+  urlDataBase[shortURL] = {longURL:newLongURL, userID:cookie};
   console.log(urlDataBase); //Server-side log of accumulated database.
-  res.redirect(`/urls/${req.params.shortURL}`);
+  res.redirect(`/urls/${shortURL}`);
 });
 
 // POST /login
 app.post('/login', (req,res) =>{
-  if (getUserFromDataBase(req.body.email, userDataBase) && req.body.password) {
-    if (bcrypt.compareSync(req.body.password, getUserFromDataBase(req.body.email, userDataBase).password)) {
-      req.session.userId =  getUserFromDataBase(req.body.email,userDataBase).id;
-      res.redirect('/urls');
-    } else {
-      res.redirect('/403');
+  const emailInput = req.body.email;
+  const passwordInput = req.body.password;
+  const user = getUserFromDataBase(emailInput, userDataBase);
+
+  if (user && passwordInput) {
+    if (bcrypt.compareSync(passwordInput, user.password)) {
+      req.session.userId = user.id;
+      return res.redirect('/urls');
     }
-  } else {
-    res.redirect('/400');
+    return res.redirect('/403');
   }
-  
-  
+  return res.redirect('/400');  
 });
 
 // POST /logout
@@ -233,16 +230,19 @@ app.post('/logout', (req, res) => {
 
 // POST /register
 app.post('/register',(req, res) => {
-  if (!req.body.email || !req.body.password) {
+  const emailInput = req.body.email;
+  const passwordInput = req.body.password;
+
+  if (!emailInput || !passwordInput) {
     res.redirect('/400');
   }
-  if (getUserFromDataBase(req.body.email, urlDataBase)) {
+  if (getUserFromDataBase(emailInput, urlDataBase)) {
     console.log(userDataBase);
-    res.redirect('/400');
-  } else {
-    const email = req.body.email;
+    return res.redirect('/400');
+  } 
+    const email = emailInput;
     const salt = bcrypt.genSaltSync(10);
-    const password = bcrypt.hashSync(req.body.password, salt);
+    const password = bcrypt.hashSync(passwordInput, salt);
     const userID = generateRandomString();
     req.session.userId =  userID;
   
@@ -250,9 +250,9 @@ app.post('/register',(req, res) => {
     userDataBase[userID] = {id: userID, email,password};
     console.log('New User Registered');
     console.log('User DataBase Entries', userDataBase);
-    res.redirect('/urls');
+    return res.redirect('/urls');
 
-  }
+  
 
 });
 

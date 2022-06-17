@@ -4,7 +4,7 @@ const app = express();
 
 const bcrypt = require('bcryptjs');
 const cookieSession = require('cookie-session');
-const {getUserFromDataBase} = require('./helpers')
+const {getUserFromDataBase} = require('./helpers');
 
 const PORT = 1337; //Default Port is leet.
 
@@ -106,13 +106,20 @@ app.get('/urls/new', (req, res) => {
 
 // GET /urls/:shortURL
 app.get('/urls/:shortURL', (req, res)=>{
-  
-  const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL:urlDataBase[req.params.shortURL].longURL,
-    user: userDataBase[req.session.userId]
-  };
-  res.render('urls-show', templateVars);
+  if (urlDataBase[req.params.shortURL]) {
+    if (req.session.userId === urlDataBase[req.params.shortURL].userID) {
+      const templateVars = {
+        shortURL: req.params.shortURL,
+        longURL:urlDataBase[req.params.shortURL].longURL,
+        user: userDataBase[req.session.userId]
+      };
+      res.render('urls-show', templateVars);
+    } else {
+      res.send('Error you cannot edit this link because you do not own it.');
+    }
+  } else {
+    res.send('Error that URL ID does not exist.');
+  }
 
 });
 
@@ -204,7 +211,7 @@ app.post('/urls/edit/:shortURL', (req,res) => {
 
 // POST /login
 app.post('/login', (req,res) =>{
-  if (getUserFromDataBase(req.body.email, userDataBase)) {
+  if (getUserFromDataBase(req.body.email, userDataBase) && req.body.password) {
     if (bcrypt.compareSync(req.body.password, getUserFromDataBase(req.body.email, userDataBase).password)) {
       req.session.userId =  getUserFromDataBase(req.body.email,userDataBase).id;
       res.redirect('/urls');

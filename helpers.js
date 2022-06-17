@@ -7,4 +7,4 @@ const getUserFromDataBase = (email, userDatabase) => {
   }
 };
 
-module.exports = {getUserFromDataBase}
+module.exports = {getUserFromDataBase};

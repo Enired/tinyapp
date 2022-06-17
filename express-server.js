@@ -85,7 +85,7 @@ app.get('/urls', (req, res) => {
   } else {
     const templateVars = {
       user: null,
-      message: 'Error: Please register and/or login'
+      message: 'Please register and/or login'
     };
     res.statusCode = 400;
     return res.render('error', templateVars);

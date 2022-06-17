@@ -12,7 +12,6 @@ const PORT = 1337; //Default Port is leet.
 // Data //
 //////////
 
-// Url Database
 const urlDataBase = {
   'b2xVn2': {
     longURL:'http://www.lighthouselabs.ca',
@@ -22,7 +21,6 @@ const urlDataBase = {
     userID:'bl0819'}
 };
 
-// User Database
 const userDataBase = {
   'db0913': {id:'db0913', email: 'a@a.com', password: '$2a$10$oqO8MbfYT1CnADwmn5qaqe3jiuQPBanGHG0NYsQXxQnZDGp3ubxqy'},
   'bl0819': {id:'bl0819', email: 'b@b.com', password: '$2a$10$oqO8MbfYT1CnADwmn5qaqe3jiuQPBanGHG0NYsQXxQnZDGp3ubxqy'}
